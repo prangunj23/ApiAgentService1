@@ -38,3 +38,25 @@ with OperationClient("http://localhost:8001") as op:
 ```sh
 uv run pytest
 ```
+
+## Change agent
+
+On every push to `main`, including merged PRs, [change-agent.yml](.github/workflows/change-agent.yml) runs `agent/change_agent.py`. The agent uses an LLM on NVIDIA NIM to summarize the diff and flag changes to the public contract. It then sends that message to the ApiAgentService2 agent as a `service1-changed` [repository_dispatch](https://docs.github.com/en/rest/repos/repos#create-a-repository-dispatch-event) event.
+
+### Setup
+
+Add these under **Settings → Secrets and variables → Actions**:
+
+| Name | Type | Value |
+|------|------|-------|
+| `NVIDIA_API_KEY` | Secret | Your NVIDIA NIM API key |
+| `SERVICE2_DISPATCH_TOKEN` | Secret | Fine-grained personal access token with access to only `prangunj23/ApiAgentService2` and **Contents: Read and write** |
+| `NIM_MODEL` | Variable | Optional. Default: `deepseek-ai/deepseek-v4-pro-0813` |
+
+### Try it locally
+
+This prints the message without sending it:
+
+```sh
+NVIDIA_API_KEY=... uv run agent/change_agent.py --dry-run --before <sha> --after <sha>
+```

@@ -1,0 +1,28 @@
+name: Change agent
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  notify-service2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+
+      - name: Summarize change and message the ApiAgentService2 agent
+        run: uv run agent/change_agent.py
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NIM_MODEL: ${{ vars.NIM_MODEL }}
+          SERVICE2_DISPATCH_TOKEN: ${{ secrets.SERVICE2_DISPATCH_TOKEN }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
