@@ -1,8 +1,9 @@
 import json
 import os
 import re
+import time
 
-from openai import OpenAI
+from openai import APIConnectionError, APITimeoutError, OpenAI
 
 NIM_BASE_URL = "https://integrate.api.nvidia.com/v1"
 DEFAULT_MODEL = "deepseek-ai/deepseek-v4-pro-0813"
@@ -21,16 +22,23 @@ def chat_json(system: str, user: str) -> dict:
     client = OpenAI(base_url=NIM_BASE_URL, api_key=os.environ["NVIDIA_API_KEY"], timeout=600)
     model = os.environ.get("NIM_MODEL") or DEFAULT_MODEL
     messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
+    max_attempts = 4
 
-    for attempt in range(2):
-        completion = client.chat.completions.create(
-            model=model, messages=messages, temperature=0.2, max_tokens=16384
-        )
+    for attempt in range(max_attempts):
+        try:
+            completion = client.chat.completions.create(
+                model=model, messages=messages, temperature=0.2, max_tokens=16384
+            )
+        except (APIConnectionError, APITimeoutError):
+            if attempt == max_attempts - 1:
+                raise
+            time.sleep(2**attempt)
+            continue
         content = completion.choices[0].message.content or ""
         try:
             return extract_json(content)
         except ValueError:
-            if attempt == 1:
+            if attempt == max_attempts - 1:
                 raise
             messages += [
                 {"role": "assistant", "content": content},
