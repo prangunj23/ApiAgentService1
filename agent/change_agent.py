@@ -14,7 +14,7 @@ import subprocess
 
 import httpx
 
-from nim import chat_json
+from nim import chat_json, require_env
 
 REPO = os.environ.get("GITHUB_REPOSITORY", "prangunj23/ApiAgentService1")
 SERVICE2_REPO = os.environ.get("SERVICE2_REPO", "prangunj23/ApiAgentService2")
@@ -63,6 +63,7 @@ def main() -> None:
     parser.add_argument("--after", default=os.environ.get("AFTER_SHA") or "HEAD")
     parser.add_argument("--dry-run", action="store_true", help="print the message instead of sending it")
     args = parser.parse_args()
+    require_env("NVIDIA_API_KEY", *([] if args.dry_run else ["SERVICE2_DISPATCH_TOKEN"]))
 
     after = git("rev-parse", args.after).strip()
     before = resolve_before(args.before, after)
@@ -96,14 +97,10 @@ def main() -> None:
         print(json.dumps({"event_type": EVENT_TYPE, "client_payload": payload}, indent=2))
         return
 
-    token = os.environ.get("SERVICE2_DISPATCH_TOKEN")
-    if not token:
-        raise SystemExit("SERVICE2_DISPATCH_TOKEN is not set; can't message the ApiAgentService2 agent.")
-
     response = httpx.post(
         f"https://api.github.com/repos/{SERVICE2_REPO}/dispatches",
         headers={
-            "Authorization": f"Bearer {token}",
+            "Authorization": f"Bearer {os.environ['SERVICE2_DISPATCH_TOKEN'].strip()}",
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
         },
