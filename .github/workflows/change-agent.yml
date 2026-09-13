@@ -1,4 +1,4 @@
-name: Change agent
+name: Service1 change agent
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  notify-service2:
+  service1-change-agent:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Summarize change and message the ApiAgentService2 agent
+      - name: Summarize this push and send it to the Service2 impact agent
         run: uv run agent/change_agent.py
         env:
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}

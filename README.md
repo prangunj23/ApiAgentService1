@@ -39,7 +39,7 @@ with OperationClient("http://localhost:8001") as op:
 uv run pytest
 ```
 
-## Change agent
+## Service1 change agent
 
 On every push to `main`, including merged PRs, [change-agent.yml](.github/workflows/change-agent.yml) runs `agent/change_agent.py`. The agent uses an LLM on NVIDIA NIM to summarize the diff and flag changes to the public contract. It then sends that message to the ApiAgentService2 agent as a `service1-changed` [repository_dispatch](https://docs.github.com/en/rest/repos/repos#create-a-repository-dispatch-event) event.
 
