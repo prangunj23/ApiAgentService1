@@ -51,7 +51,7 @@ Add these under **Settings → Secrets and variables → Actions**:
 |------|------|-------|
 | `NVIDIA_API_KEY` | Secret | Your NVIDIA NIM API key |
 | `SERVICE2_DISPATCH_TOKEN` | Secret | Fine-grained personal access token with access to only `prangunj23/ApiAgentService2` and **Contents: Read and write** |
-| `NIM_MODEL` | Variable | Optional. Default: `deepseek-ai/deepseek-v4-pro-0813` |
+| `NIM_MODEL` | Variable or secret | Optional. Default: `deepseek-ai/deepseek-v4-pro-0813` |
 
 ### Try it locally
 

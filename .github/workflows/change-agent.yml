@@ -22,7 +22,7 @@ jobs:
         run: uv run agent/change_agent.py
         env:
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
-          NIM_MODEL: ${{ vars.NIM_MODEL }}
+          NIM_MODEL: ${{ vars.NIM_MODEL || secrets.NIM_MODEL }}
           SERVICE2_DISPATCH_TOKEN: ${{ secrets.SERVICE2_DISPATCH_TOKEN }}
           BEFORE_SHA: ${{ github.event.before }}
           AFTER_SHA: ${{ github.sha }}
