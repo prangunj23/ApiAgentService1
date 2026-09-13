@@ -1,7 +1,7 @@
 [project]
 name = "operation"
 version = "1.0.0"
-description = "operation service: a simple API that adds two numbers, plus a typed client for consumers"
+description = "operation service: a simple API that subtracts two numbers (a - b), plus a typed client for consumers"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
