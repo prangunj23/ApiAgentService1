@@ -1,6 +1,6 @@
 # operation (ApiAgentService1)
 
-A simple API that multiplies two numbers (`a * b`). It also ships a typed Python client (`operation.OperationClient`) for downstream consumers.
+A simple API that adds two numbers (`a + b`). It also ships a typed Python client (`operation.OperationClient`) for downstream consumers.
 
 ## Run
 
@@ -15,10 +15,10 @@ Interactive docs: http://localhost:8001/docs. OpenAPI contract: http://localhost
 
 | Method | Path                       | Body               | Response            |
 |--------|----------------------------|--------------------|---------------------|
-| POST   | `/v1/operation/numeric_op` | `{"a": 2, "b": 3}` | `{"result": 6.0}`   |
+| POST   | `/v1/operation/numeric_op` | `{"a": 2, "b": 3}` | `{"result": 5.0}`   |
 | GET    | `/health`                  |                    | `{"status": "ok"}`  |
 
-The result is `a * b`. Missing or non-numeric inputs return `422`.
+The result is `a + b`. Missing or non-numeric inputs return `422`.
 
 ```sh
 curl -X POST localhost:8001/v1/operation/numeric_op -H 'content-type: application/json' -d '{"a":2,"b":3}'
@@ -30,7 +30,7 @@ curl -X POST localhost:8001/v1/operation/numeric_op -H 'content-type: applicatio
 from operation import OperationClient
 
 with OperationClient("http://localhost:8001") as op:
-    op.numeric_op(2, 3).result  # 6.0
+    op.numeric_op(2, 3).result  # 5.0
 ```
 
 ## Test

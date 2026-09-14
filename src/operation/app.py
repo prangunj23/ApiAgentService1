@@ -9,7 +9,7 @@ v1 = APIRouter(prefix="/v1/operation", tags=["operation"])
 
 @v1.post("/numeric_op", response_model=NumericOpResponse)
 def numeric_op(request: NumericOpRequest) -> NumericOpResponse:
-    return NumericOpResponse(result=request.a * request.b)
+    return NumericOpResponse(result=request.a + request.b)
 
 
 app.include_router(v1)
