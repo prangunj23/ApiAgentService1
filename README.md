@@ -1,6 +1,6 @@
 # operation (ApiAgentService1)
 
-A simple API that subtracts one number from another (`a - b`). It also ships a typed Python client (`operation.OperationClient`) for downstream consumers.
+A simple API that multiplies two numbers (`a * b`). It also ships a typed Python client (`operation.OperationClient`) for downstream consumers.
 
 ## Run
 
@@ -15,10 +15,10 @@ Interactive docs: http://localhost:8001/docs. OpenAPI contract: http://localhost
 
 | Method | Path                       | Body               | Response            |
 |--------|----------------------------|--------------------|---------------------|
-| POST   | `/v1/operation/numeric_op` | `{"a": 2, "b": 3}` | `{"result": -1.0}`  |
+| POST   | `/v1/operation/numeric_op` | `{"a": 2, "b": 3}` | `{"result": 6.0}`   |
 | GET    | `/health`                  |                    | `{"status": "ok"}`  |
 
-The result is `a - b`, so the order of the inputs matters. Missing or non-numeric inputs return `422`.
+The result is `a * b`. Missing or non-numeric inputs return `422`.
 
 ```sh
 curl -X POST localhost:8001/v1/operation/numeric_op -H 'content-type: application/json' -d '{"a":2,"b":3}'
@@ -30,7 +30,7 @@ curl -X POST localhost:8001/v1/operation/numeric_op -H 'content-type: applicatio
 from operation import OperationClient
 
 with OperationClient("http://localhost:8001") as op:
-    op.numeric_op(2, 3).result  # -1.0
+    op.numeric_op(2, 3).result  # 6.0
 ```
 
 ## Test
@@ -59,4 +59,29 @@ This prints the message without sending it:
 
 ```sh
 NVIDIA_API_KEY=... uv run agent/change_agent.py --dry-run --before <sha> --after <sha>
+```
+
+## Chat agent
+
+`chat_agent/` holds a chat agent for this repo, built on agentkit (the ApiAgentKit repo). You talk to it in the ApiAgentUI app. It works in its own clone of this repo under `~/.apiagent/service1/`, so it never touches your checkout. It can:
+- read the code
+- edit `src/` and `tests/`
+- run the tests
+- open pull requests
+- message the ApiAgentService2 agent
+- send the same `service1-changed` event as the workflow above, using `notify_service2`
+
+You approve pull requests and events in the UI before they happen.
+
+```sh
+cd chat_agent
+cp .env.example .env   # add NVIDIA_API_KEY and GITHUB_TOKEN
+uv sync
+uv run pytest
+```
+
+To run it with the other agents, start from this repo's root:
+
+```sh
+uv run --project ../ApiAgentKit agentkit dev --registry ../ApiAgentUI/public/registry.json
 ```

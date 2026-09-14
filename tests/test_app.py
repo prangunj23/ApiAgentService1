@@ -10,12 +10,12 @@ client = TestClient(app)
 def test_numeric_op():
     response = client.post("/v1/operation/numeric_op", json={"a": 2, "b": 3})
     assert response.status_code == 200
-    assert response.json() == {"result": -1.0}
+    assert response.json() == {"result": 6.0}
 
 
 def test_numeric_op_floats_and_negatives():
     response = client.post("/v1/operation/numeric_op", json={"a": -1.5, "b": 4.25})
-    assert response.json() == {"result": -5.75}
+    assert response.json() == {"result": -6.375}
 
 
 def test_numeric_op_missing_input_returns_422():
