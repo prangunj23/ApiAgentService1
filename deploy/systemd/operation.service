@@ -1,0 +1,31 @@
+[Unit]
+Description=operation API (ApiAgentService1)
+Documentation=https://github.com/prangunj23/ApiAgentService1
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+User=apiagent
+Group=apiagent
+WorkingDirectory=/opt/apiagent/ApiAgentService1
+EnvironmentFile=/etc/apiagent/operation.env
+ExecStart=/opt/apiagent/ApiAgentService1/.venv/bin/uvicorn operation.app:app --host ${BIND_HOST} --port ${PORT}
+Restart=on-failure
+RestartSec=5
+
+# The API is stateless: it needs no write access anywhere.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

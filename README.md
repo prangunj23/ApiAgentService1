@@ -63,7 +63,7 @@ NVIDIA_API_KEY=... uv run agent/change_agent.py --dry-run --before <sha> --after
 
 ## Chat agent
 
-`chat_agent/` holds a chat agent for this repo, built on agentkit (the ApiAgentKit repo). You talk to it in the ApiAgentUI app. It works in its own clone of this repo under `~/.apiagent/service1/`, so it never touches your checkout. It can:
+`chat_agent/` holds a chat agent for this repo, built on agentkit. A copy of agentkit is vendored at `chat_agent/vendor/agentkit/` and committed here, so this repo installs, tests, and deploys with nothing else checked out beside it. The copy is generated from the ApiAgentKit repo — change agentkit there and re-run its `scripts/sync_vendor.py`, never edit `vendor/` directly, because the next sync overwrites it. CI runs `vendor/check_vendor.py` to enforce that. You talk to the agent in the ApiAgentUI app. It works in its own clone of this repo under `~/.apiagent/service1/`, so it never touches your checkout. It can:
 - read the code
 - edit `src/` and `tests/`
 - run the tests
@@ -80,8 +80,20 @@ uv sync
 uv run pytest
 ```
 
-To run it with the other agents, start from this repo's root:
+To run this agent on its own, from `chat_agent/`:
+
+```sh
+uv run agentkit serve service1_agent.spec:SPEC --port 9001
+```
+
+To run it alongside the other agents during development, from this repo's root (needs the sibling checkouts):
 
 ```sh
 uv run --project ../ApiAgentKit agentkit dev --registry ../ApiAgentUI/public/registry.json
 ```
+
+## Deploy
+
+This repo deploys to its own Oracle Always Free VM, with nothing else checked out beside it. `deploy/bootstrap.sh` provisions the VM and doubles as the deploy command; `operation.service` and `service1-agent.service` run the API and the chat agent. Both bind to Tailscale rather than the public interface, so no port is ever opened in OCI.
+
+See [deploy/README.md](deploy/README.md) for the runbook.
